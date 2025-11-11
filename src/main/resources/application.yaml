@@ -1,0 +1,92 @@
+spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+  modulith:
+    detection-strategy: explicitly-annotated
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DATASOURCE_URL}
+    password: ${DATASOURCE_PASSWORD}
+    username: ${DATASOURCE_USER}
+    hikari:
+      maximum-pool-size: 5
+  application:
+    name: book-api
+  jpa:
+    open-in-view: false
+  flyway:
+    schemas: book
+    baseline-on-migrate: true
+    create-schemas: true
+
+server:
+  port: ${APP_PORT:5000}
+  forward-headers-strategy: native
+
+logging:
+  file:
+    name: logs/app.log
+  level:
+    fr.killiandev.book: DEBUG
+
+supabase:
+  key: ${SUPABASE_KEY}
+  secret: ${SUPABASE_SECRET}
+  url: ${SUPABASE_URL}
+
+s3:
+  mode-dev: false
+  access-key: ${S3_ACCESS_KEY}
+  secret-key: ${S3_SECRET_KEY}
+  endpoint: ${S3_ENDPOINT}
+  region: ${S3_REGION}
+  public-endpoint:
+    MEDIA: ${S3_MEDIA_URL}
+
+management:
+  observations:
+    annotations:
+      enabled: true
+  tracing:
+    sampling:
+      probability: ${TRACING_PROBABILITY:1.0}
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  otlp:
+    metrics:
+      export:
+        url: ${OTLP_METRICS_URL}
+        step: ${METRICS_EXPORT_STEP:1m}
+        batch-size: ${METRICS_BATCH_SIZE:512}
+    tracing:
+      endpoint: ${OTLP_TRACING_URL}
+#      compression: gzip - not yet supported by Signoz
+      timeout: ${TRACING_TIMEOUT:10s}
+    logging:
+      endpoint: ${OTLP_LOGGING_URL}
+#      compression: gzip - not yet supported by Signoz
+      timeout: ${LOGGING_TIMEOUT:10s}
+  opentelemetry:
+    resource-attributes:
+      # service.version in the future
+      deployment.environment: ${API_ENVIRONMENT:local}
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      slo:
+        http.server.requests: 50ms,100ms,200ms,500ms,1s,2s
+
+springdoc:
+  swagger-ui:
+    enabled: ${SPRINGDOC_ENABLED:false}
+  api-docs:
+    enabled: ${SPRINGDOC_ENABLED:false}
+map:
+  api-key: ${MAP_API_KEY}

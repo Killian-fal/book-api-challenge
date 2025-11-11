@@ -1,0 +1,47 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-book}
+      POSTGRES_USER: ${POSTGRES_USER:-book}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-book}
+    ports:
+      - "5432:5432"
+
+  book-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    environment:
+      APP_PORT: ${APP_PORT:-5000}
+      DATASOURCE_URL: ${DATASOURCE_URL:-jdbc:postgresql://postgres:5432/book}
+      DATASOURCE_USER: ${DATASOURCE_USER:-book}
+      DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD:-book}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      SUPABASE_KEY: ${SUPABASE_KEY}
+      SUPABASE_SECRET: ${SUPABASE_SECRET}
+      SUPABASE_URL: ${SUPABASE_URL}
+      S3_MODE_DEV: ${S3_MODE_DEV:-true}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_ENDPOINT: ${S3_ENDPOINT}
+      S3_REGION: ${S3_REGION}
+      S3_MEDIA_URL: ${S3_MEDIA_URL}
+      OTLP_METRICS_URL: ${OTLP_METRICS_URL}
+      OTLP_TRACING_URL: ${OTLP_TRACING_URL}
+      OTLP_LOGGING_URL: ${OTLP_LOGGING_URL}
+      METRICS_EXPORT_STEP: ${METRICS_EXPORT_STEP:-1m}
+      METRICS_BATCH_SIZE: ${METRICS_BATCH_SIZE:-512}
+      TRACING_PROBABILITY: ${TRACING_PROBABILITY:-1.0}
+      TRACING_TIMEOUT: ${TRACING_TIMEOUT:-10s}
+      LOGGING_TIMEOUT: ${LOGGING_TIMEOUT:-10s}
+      API_ENVIRONMENT: ${API_ENVIRONMENT:-local}
+      SPRINGDOC_ENABLED: ${SPRINGDOC_ENABLED:-true}
+      MAP_API_KEY: ${MAP_API_KEY}
+    ports:
+      - "5000:5000"
+      - "5005:5005"
